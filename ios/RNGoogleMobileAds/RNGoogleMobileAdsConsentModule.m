@@ -116,6 +116,27 @@ RCT_EXPORT_METHOD(requestInfoUpdate
 #endif
 }
 
+- (UIViewController*) getRootVC {
+    NSArray *allWindows = [[UIApplication sharedApplication] windows];
+    UIWindow *topWindow = nil;
+    CGFloat highestWindowLevel = -CGFLOAT_MAX;
+
+    for (UIWindow *window in allWindows) {
+        if (window.windowLevel > highestWindowLevel && window.rootViewController != nil) {
+            topWindow = window;
+            highestWindowLevel = window.windowLevel;
+        }
+    }
+    
+    UIViewController *root = topWindow.rootViewController;
+    
+    while (root.presentedViewController != nil) {
+        root = root.presentedViewController;
+    }
+    
+    return root;
+}
+
 RCT_EXPORT_METHOD(showForm : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
 #if !TARGET_OS_MACCATALYST
   [UMPConsentForm loadWithCompletionHandler:^(UMPConsentForm *form, NSError *loadError) {
@@ -126,8 +147,7 @@ RCT_EXPORT_METHOD(showForm : (RCTPromiseResolveBlock)resolve : (RCTPromiseReject
                                         @"message" : loadError.localizedDescription,
                                       } mutableCopy]];
     } else {
-      [form presentFromViewController:[UIApplication sharedApplication]
-                                          .delegate.window.rootViewController
+      [form presentFromViewController:[self getRootVC]
                     completionHandler:^(NSError *_Nullable dismissError) {
                       if (dismissError) {
                         [RNSharedUtils
@@ -150,8 +170,7 @@ RCT_EXPORT_METHOD(showPrivacyOptionsForm
                   : (RCTPromiseRejectBlock)reject) {
 #if !TARGET_OS_MACCATALYST
   [UMPConsentForm
-      presentPrivacyOptionsFormFromViewController:[UIApplication sharedApplication]
-                                                      .delegate.window.rootViewController
+      presentPrivacyOptionsFormFromViewController:[self getRootVC]
                                 completionHandler:^(NSError *_Nullable formError) {
                                   if (formError) {
                                     [RNSharedUtils
@@ -173,8 +192,7 @@ RCT_EXPORT_METHOD(loadAndShowConsentFormIfRequired
                   : (RCTPromiseRejectBlock)reject) {
 #if !TARGET_OS_MACCATALYST
   [UMPConsentForm
-      loadAndPresentIfRequiredFromViewController:[UIApplication sharedApplication]
-                                                     .delegate.window.rootViewController
+      loadAndPresentIfRequiredFromViewController:[self getRootVC]
                                completionHandler:^(NSError *_Nullable formError) {
                                  if (formError) {
                                    [RNSharedUtils
