@@ -122,9 +122,13 @@ RCT_EXPORT_METHOD(requestInfoUpdate
     CGFloat highestWindowLevel = -CGFLOAT_MAX;
 
     for (UIWindow *window in allWindows) {
-        if (window.windowLevel > highestWindowLevel && window.rootViewController != nil) {
+        NSString *windowClassName = NSStringFromClass([window class]);
+        BOOL isOverlay = [windowClassName containsString:@"Overlay"];
+        if (isOverlay || ([window isMemberOfClass:[UIWindow class]] && window.windowLevel > highestWindowLevel && window.rootViewController != nil)) {
             topWindow = window;
             highestWindowLevel = window.windowLevel;
+            if (isOverlay)
+                break;
         }
     }
     
@@ -133,6 +137,9 @@ RCT_EXPORT_METHOD(requestInfoUpdate
     while (root.presentedViewController != nil) {
         root = root.presentedViewController;
     }
+    
+    if(root == nil)
+        root = [UIApplication sharedApplication].delegate.window.rootViewController;
     
     return root;
 }
