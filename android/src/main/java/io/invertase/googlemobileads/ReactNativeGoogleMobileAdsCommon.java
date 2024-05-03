@@ -154,7 +154,7 @@ public class ReactNativeGoogleMobileAdsCommon {
       }
     }
 
-    builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
+    // builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
 
     if (adRequestOptions.hasKey("keywords")) {
       ArrayList<Object> keywords =
@@ -169,9 +169,9 @@ public class ReactNativeGoogleMobileAdsCommon {
       builder.setContentUrl(Objects.requireNonNull(adRequestOptions.getString("contentUrl")));
     }
 
-    if (adRequestOptions.hasKey("requestAgent")) {
-      builder.setRequestAgent(Objects.requireNonNull(adRequestOptions.getString("requestAgent")));
-    }
+//    if (adRequestOptions.hasKey("requestAgent")) {
+//      builder.setRequestAgent(Objects.requireNonNull(adRequestOptions.getString("requestAgent")));
+//    }
 
     if (adRequestOptions.hasKey("customTargeting")) {
       Map<String, Object> customTargeting = adRequestOptions.getMap("customTargeting").toHashMap();
